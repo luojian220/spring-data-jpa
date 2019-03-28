@@ -20,7 +20,6 @@ import java.util.Date;
  * @since JDK 1.7
  */
 @Entity
-@Component
 @Table(name = "user_info")
 @ToString
 public class UserInfo {

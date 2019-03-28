@@ -22,7 +22,6 @@ import java.util.Date;
  * @since JDK 1.7
  */
 @Entity
-@Component
 @Table(name = "user_Account")
 @ToString
 public class UserAccount {
