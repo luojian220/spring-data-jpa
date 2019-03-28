@@ -61,7 +61,7 @@ public class SpringDataJpaApplicationTests {
 	/**
 	 * 使用jpa 自带的 @Version注解时， 该字段不赋值，就会当成一个新的记录，执行insert
 	 * 若该字段有值，但是值与数据库最新值不一致时，会抛出乐观锁异常：org.hibernate.StaleObjectStateException
-	 * 只有主键 及 version 一致时，才会更新成功。结论：version字段必须赋值
+	 * 只有主键 及 version 一致时，才会更新成功。结论：如果是更新，主键及version字段必须赋值
 	 */
 	@Test
 	public void userAccount_version_save() {
@@ -79,6 +79,17 @@ public class SpringDataJpaApplicationTests {
 	public void userAccount_version_update() {
 
 		UserAccount userAccount = userAccountService.findById(1L);
+
+		userAccount.setAmount(userAccount.getAmount().add(BigDecimal.ONE));
+		userAccountService.save(userAccount);
+		logger.info(userAccount.toString());
+	}
+
+	@Test
+	public void userAccount_customer_get_method() {
+
+		String accountCode = "luno_0001";
+		UserAccount userAccount = userAccountService.getByAccountCode(accountCode);
 
 		userAccount.setAmount(userAccount.getAmount().add(BigDecimal.ONE));
 		userAccountService.save(userAccount);

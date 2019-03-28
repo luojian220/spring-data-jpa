@@ -12,4 +12,13 @@ import org.springframework.data.repository.CrudRepository;
  * @since JDK 1.7
  */
 public interface UserAccountRepository extends CrudRepository<UserAccount, Long> {
+
+
+    /**
+     * 获取 UserAccount对象
+     * @param accountCode
+     * @return
+     */
+    public UserAccount getByAccountCode(String accountCode);
+
 }

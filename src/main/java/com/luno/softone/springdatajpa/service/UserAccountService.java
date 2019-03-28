@@ -26,7 +26,13 @@ public class UserAccountService {
     }
 
     public UserAccount findById(Long id) {
-        Optional<UserAccount> userInfo = userAccountRepository.findById(id);
-        return userInfo.orElse(null);
+        Optional<UserAccount> accountOptional = userAccountRepository.findById(id);
+        return accountOptional.orElse(null);
+    }
+
+
+    public UserAccount getByAccountCode(String accountCode) {
+        UserAccount userAccount = userAccountRepository.getByAccountCode(accountCode);
+        return userAccount;
     }
 }

@@ -56,6 +56,7 @@ public class UserAccount {
         this.id = id;
     }
 
+    @Column(unique = true)
     public String getAccountCode() {
         return accountCode;
     }
