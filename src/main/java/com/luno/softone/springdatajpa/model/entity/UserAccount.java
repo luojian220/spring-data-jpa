@@ -1,13 +1,13 @@
 package com.luno.softone.springdatajpa.model.entity;
 
-import lombok.ToString;
-import org.springframework.stereotype.Component;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import java.math.BigDecimal;
@@ -23,7 +23,6 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "user_Account")
-@ToString
 public class UserAccount {
 
     /**
@@ -44,6 +43,11 @@ public class UserAccount {
     private Date createTime;
 
     private Long version;
+
+
+    private UserInfo userInfo;
+
+    private String createUser;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -88,5 +92,34 @@ public class UserAccount {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAccount{" +
+                "id=" + id +
+                ", accountCode='" + accountCode + '\'' +
+                ", amount=" + amount +
+                ", createTime=" + createTime +
+                ", version=" + version +
+                '}';
     }
 }

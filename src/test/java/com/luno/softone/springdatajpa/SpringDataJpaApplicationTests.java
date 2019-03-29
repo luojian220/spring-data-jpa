@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class SpringDataJpaApplicationTests {
 	public void userInfo_update() {
 
 
-		UserInfo userInfo = userInfoService.findById(3L);
+		UserInfo userInfo = userInfoService.findById(1L);
 		userInfo.setJobNumber("1006");
 		userInfoService.save(userInfo);
 		logger.info(userInfo.toString());
@@ -67,10 +68,10 @@ public class SpringDataJpaApplicationTests {
 	public void userAccount_version_save() {
 
 		UserAccount userAccount = new UserAccount();
-		userAccount.setAccountCode("luno_0001");
+		userAccount.setAccountCode("luno_1101");
 		userAccount.setAmount(BigDecimal.ZERO);
-		userAccount.setId(1L);
-		userAccount.setVersion(6L);
+//		userAccount.setId(1L);
+//		userAccount.setVersion(6L);
 		userAccountService.save(userAccount);
 		logger.info(userAccount.toString());
 	}
@@ -79,12 +80,16 @@ public class SpringDataJpaApplicationTests {
 	public void userAccount_version_update() {
 
 		UserAccount userAccount = userAccountService.findById(1L);
-
-		userAccount.setAmount(userAccount.getAmount().add(BigDecimal.ONE));
-		userAccountService.save(userAccount);
-		logger.info(userAccount.toString());
+		if (userAccount != null) {
+			userAccount.setAmount(userAccount.getAmount().add(BigDecimal.ONE));
+			userAccountService.save(userAccount);
+			logger.info(userAccount.toString());
+		}
 	}
 
+	/**
+	 * 更新UserAccount表字段
+	 */
 	@Test
 	public void userAccount_customer_get_method() {
 
@@ -94,5 +99,35 @@ public class SpringDataJpaApplicationTests {
 		userAccount.setAmount(userAccount.getAmount().add(BigDecimal.ONE));
 		userAccountService.save(userAccount);
 		logger.info(userAccount.toString());
+	}
+
+
+	/**
+	 * 测试 oneToOne
+	 */
+	@Test
+	public void userAccount_userInfo_oneToOne() {
+
+		UserInfo userInfo = new UserInfo() ;
+		userInfo.setJobNumber("1009");
+		userInfo.setName("joo");
+		userInfo.setCreateTime(new Date());
+		userInfoService.save(userInfo);
+
+		UserAccount userAccount = new UserAccount();
+		String accountCode = "luno_000" + userInfo.getId();
+		userAccount.setAccountCode(accountCode);
+		userAccount.setAmount(BigDecimal.ZERO);
+//		userAccount.setId(1L);
+//		userAccount.setVersion(6L);
+		userAccount.setUserInfo(userInfo);
+
+		userAccountService.save(userAccount);
+
+		UserAccount userAccountBO = userAccountService.getByAccountCode(accountCode);
+
+		userAccountBO.setAmount(userAccountBO.getAmount().add(BigDecimal.ONE));
+		userAccountService.save(userAccountBO);
+		logger.info(userAccountBO.toString());
 	}
 }

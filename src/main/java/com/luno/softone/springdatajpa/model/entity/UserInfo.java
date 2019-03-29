@@ -1,13 +1,14 @@
 package com.luno.softone.springdatajpa.model.entity;
 
-import lombok.ToString;
-import org.springframework.stereotype.Component;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -21,7 +22,6 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "user_info")
-@ToString
 public class UserInfo {
 
     /**
@@ -40,6 +40,8 @@ public class UserInfo {
      * 创建时间
      */
     private Date createTime;
+
+    private UserAccount userAccount;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -77,4 +79,23 @@ public class UserInfo {
         this.createTime = createTime;
     }
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userInfo", orphanRemoval = true)
+    @OrderBy("id")
+    public UserAccount getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", jobNumber='" + jobNumber + '\'' +
+                ", createTime=" + createTime +
+                '}';
+    }
 }
