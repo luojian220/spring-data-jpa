@@ -1,17 +1,10 @@
 package com.luno.softone.springdatajpa.model.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author luojian
@@ -22,8 +15,8 @@ import java.util.Date;
  * @since JDK 1.7
  */
 @Entity
-@Table(name = "user_Account")
-public class UserAccount {
+@Table(name = "user_account")
+public class UserAccount implements Serializable {
 
     /**
      * ID
@@ -48,6 +41,8 @@ public class UserAccount {
     private UserInfo userInfo;
 
     private String createUser;
+
+    private List<UserAccountLog> userAccountLogList;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -94,7 +89,7 @@ public class UserAccount {
         this.version = version;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     public UserInfo getUserInfo() {
         return userInfo;
@@ -110,6 +105,16 @@ public class UserAccount {
 
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,mappedBy = "userAccount",orphanRemoval = true)
+    @OrderBy("id")
+    public List<UserAccountLog> getUserAccountLogList() {
+        return userAccountLogList;
+    }
+
+    public void setUserAccountLogList(List<UserAccountLog> userAccountLogList) {
+        this.userAccountLogList = userAccountLogList;
     }
 
     @Override

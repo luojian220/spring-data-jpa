@@ -1,8 +1,9 @@
 package com.luno.softone.springdatajpa;
 
 import com.luno.softone.springdatajpa.model.entity.UserAccount;
+import com.luno.softone.springdatajpa.model.entity.UserAccountLog;
 import com.luno.softone.springdatajpa.model.entity.UserInfo;
-import com.luno.softone.springdatajpa.respository.UserInfoRepository;
+import com.luno.softone.springdatajpa.respository.UserAccountLogRepository;
 import com.luno.softone.springdatajpa.service.UserAccountService;
 import com.luno.softone.springdatajpa.service.UserInfoService;
 import org.junit.Test;
@@ -11,13 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,6 +27,10 @@ public class SpringDataJpaApplicationTests {
 
 	@Autowired
 	private UserAccountService userAccountService;
+
+	@Autowired
+	private UserAccountLogRepository userAccountLogRepository;
+
 	@Test
 	public void userInfo_save() {
 
@@ -112,6 +114,7 @@ public class SpringDataJpaApplicationTests {
 		userInfo.setJobNumber("1009");
 		userInfo.setName("joo");
 		userInfo.setCreateTime(new Date());
+		userInfo.setCreateTime(new Date());
 		userInfoService.save(userInfo);
 
 		UserAccount userAccount = new UserAccount();
@@ -129,5 +132,72 @@ public class SpringDataJpaApplicationTests {
 		userAccountBO.setAmount(userAccountBO.getAmount().add(BigDecimal.ONE));
 		userAccountService.save(userAccountBO);
 		logger.info(userAccountBO.toString());
+	}
+
+	@Test
+	public void getUserInfo_of_userAccount() {
+
+		UserInfo userInfo = userInfoService.findById(1L);
+		UserAccount userAccount = userInfo.getUserAccount();
+		logger.info("员工工号为：{} , 账户code:{} ,余额：{}", userInfo.getJobNumber() ,
+				userAccount.getAccountCode(), userAccount.getAmount() );
+	}
+
+	@Test
+	public void getUserAccount_of_userInfo() {
+
+		UserAccount userAccount = userAccountService.findById(1L);
+		UserInfo userInfo = userAccount.getUserInfo();
+		logger.info("员工工号为：{} , 账户code:{} ,余额：{}", userInfo.getJobNumber() ,
+				userAccount.getAccountCode(), userAccount.getAmount() );
+	}
+
+	@Test
+	public void getUserAccountLog_of_userAccount(){
+
+		UserInfo userInfo = new UserInfo() ;
+		UserAccount userAccount = new UserAccount();
+		beforeInitDate(userInfo,userAccount);
+
+		UserAccountLog userAccountLog = new UserAccountLog();
+		userAccountLog.setUserAccount(userAccount);
+		userAccountLog.setOperateAmount(BigDecimal.ONE);
+		userAccountLog.setBeforeAmount(userAccount.getAmount());
+		userAccountLog.setAfterAmount(userAccount.getAmount().add(BigDecimal.ONE));
+		userAccountLog.setCreateTime(new Date());
+		userAccountLogRepository.save(userAccountLog);
+
+		logger.info(userAccountLog.toString());
+
+	}
+
+	@Test
+	public void getUserAccount_of_userAccountLog() {
+
+		UserAccount userAccount = userAccountService.getByAccountCode("luno_0001");
+
+		logger.info("log size : " + userAccount.getUserAccountLogList().size());
+
+	}
+
+	/**
+	 * 初始化数据 UserInfo UserAccount
+	 */
+	private void beforeInitDate(UserInfo userInfo,UserAccount userAccount) {
+
+		userInfo.setJobNumber("1009");
+		userInfo.setName("joo");
+		userInfo.setCreateTime(new Date());
+		userInfo.setCreateTime(new Date());
+		userInfoService.save(userInfo);
+
+		String accountCode = "luno_000" + userInfo.getId();
+		userAccount.setAccountCode(accountCode);
+		userAccount.setAmount(BigDecimal.ZERO);
+//		userAccount.setId(1L);
+//		userAccount.setVersion(6L);
+		userAccount.setUserInfo(userInfo);
+
+		userAccountService.save(userAccount);
 	}
 }
